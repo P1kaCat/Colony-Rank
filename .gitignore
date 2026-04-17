@@ -1,0 +1,46 @@
+# Gradle
+.gradle/
+.gradle-user-home/
+build/
+out/
+*.jar
+*.zip
+
+# Keep gradle wrapper jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.project
+*.classpath
+.c9/
+*.launch
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Data
+data/
+logs/
+*.log
+
+# Runtime
+run/
+
+# Local temp/cache
+.tmp_*/
+
+# Local tools/artifacts
+gradle-8.10.2/
+gradle-8.10.2-bin.zip
+bin/

@@ -1,0 +1,8 @@
+{
+  "colonyrank.settings": "Parametres ColonyRank",
+  "colonyrank.settings.desc": "Configuration en jeu de ColonyRank.",
+  "colonyrank.settings.language": "Langue",
+  "colonyrank.settings.language.desc": "Langue utilisee par les messages en jeu et Discord.",
+  "colonyrank.settings.language.fr": "Francais",
+  "colonyrank.settings.language.en": "Anglais"
+}

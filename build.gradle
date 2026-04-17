@@ -1,0 +1,123 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.120'
+}
+
+version = '1.0.0'
+group = 'com.colonyrank.mod'
+
+def minecoloniesUser = findProperty('minecoloniesUser') ?: System.getenv('MINECOLONIES_USER')
+def minecoloniesToken = findProperty('minecoloniesToken') ?: System.getenv('MINECOLONIES_TOKEN')
+def minecoloniesRepoEnabled = minecoloniesUser && minecoloniesToken
+
+base {
+    archivesName = 'ColonyRank'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+minecraft {
+    version = '1.21.1'
+}
+
+sourceSets.main.resources {
+    srcDir 'src/main/resources'
+}
+
+tasks.named('processResources', Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+repositories {
+    maven {
+        name = 'FzzyMaven'
+        url = 'https://maven.fzzyhmstrs.me/'
+    }
+    maven {
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
+    }
+    mavenLocal()
+    maven {
+        url = 'https://libraries.minecraft.net'
+    }
+    maven {
+        url = 'https://maven.neoforged.net/releases'
+    }
+    maven {
+        url = 'https://maven.minecraftforge.net'
+    }
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+
+    if (minecoloniesRepoEnabled) {
+        maven {
+            url = 'https://pkgs.dev.azure.com/djtheredstoner/DevThunder/_packaging/Mods/maven/v1'
+            credentials {
+                username = minecoloniesUser
+                password = minecoloniesToken
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'net.neoforged:neoforge:21.1.219'
+    implementation 'me.fzzyhmstrs:fzzy_config:0.7.6+1.21+neoforge'
+
+    // MineColonies API
+    if (minecoloniesRepoEnabled) {
+        compileOnly 'com.ldtteam:minecolonies-api:1.0.0-SNAPSHOT'
+    }
+
+    // JSON processing
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Logging (optional but recommended)
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+}
+
+tasks.named('jar', Jar) {
+    manifest {
+        attributes([
+            'Specification-Title'     : 'ColonyRank',
+            'Specification-Vendor'    : 'PikaCat',
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : project.name,
+            'Implementation-Version'  : project.version,
+            'Implementation-Vendor'   : 'PikaCat',
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = base.archivesName
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = "file://" + (System.getenv('MAVEN_PUBLISH_DIR') ?: 'build/maven')
+        }
+    }
+}
+
+// Copy the built jar into the modpack folder after each build
+// Update this path if your modpack location changes.
+def modsDir = file('C:/Users/kylli/AppData/Roaming/ModrinthApp/profiles/Atlas Colony/mods')
+
+tasks.register('copyToMods', Copy) {
+    dependsOn tasks.named('jar')
+    from(tasks.named('jar').flatMap { it.archiveFile })
+    into modsDir
+}
+
+tasks.named('build') {
+    finalizedBy 'copyToMods'
+}

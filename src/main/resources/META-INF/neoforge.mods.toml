@@ -1,0 +1,38 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="colonyrank"
+version="1.0.0"
+displayName="ColonyRank"
+authors="PikaCat"
+description='''A server-side mod that ranks MineColonies colonies and provides a leaderboard system.'''
+
+[[dependencies.colonyrank]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.219,)"
+ordering="NONE"
+side="SERVER"
+
+[[dependencies.colonyrank]]
+modId="minecraft"
+type="required"
+versionRange="[1.21, 1.22)"
+ordering="NONE"
+side="SERVER"
+
+[[dependencies.colonyrank]]
+modId="minecolonies"
+type="required"
+versionRange="[1.0,)"
+ordering="AFTER"
+side="SERVER"
+
+[[dependencies.colonyrank]]
+modId="fzzy_config"
+type="required"
+versionRange="[0.7.6,)"
+ordering="NONE"
+side="BOTH"

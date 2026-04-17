@@ -1,0 +1,23 @@
+pluginManagement {
+    repositories {
+        maven {
+            url = "https://maven.neoforged.net/releases"
+        }
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    // Disabled temporarily to allow wrapper generation.
+    // Re-enable after the wrapper is created if you need build scans.
+    // id 'com.gradle.enterprise' version '3.16.2'
+}
+
+rootProject.name = 'ColonyRank'
+
+// gradleEnterprise {
+//     buildScan {
+//         termsOfServiceUrl = "https://gradle.com/terms-of-service"
+//         termsOfServiceAgree = "yes"
+//     }
+// }
