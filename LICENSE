@@ -1,0 +1,67 @@
+PikaCat's Custom License v1.0
+
+Copyright (c) 2026 p1kacat. All rights reserved.
+
+This license is intentionally generic and may be used across multiple projects
+published by p1kacat.
+
+1. LIMITED SOFTWARE USE
+You are granted a limited, revocable, non-exclusive, non-transferable right to:
+- Download official release files of the Software.
+- Install and run unmodified binaries of the Software.
+- Keep local backup copies for personal use.
+
+2. MODPACK DISTRIBUTION PERMISSION
+You may include unmodified official binaries of the Software in private or public
+modpacks, launcher profiles, and server/client packs, provided that all conditions
+below are met:
+- Original file identity (name and contents) is unchanged.
+- Clear credit is given to the original project name and to "p1kacat".
+- A visible link to the official project page or repository is provided.
+- You do not present the Software as your own work.
+
+3. ONLINE CONTENT PERMISSION
+You may create and publish online content featuring the Software, including videos,
+livestreams, screenshots, clips, and social media posts. Monetization of this
+content (ad revenue, platform revenue share, tips, sponsorships for the content
+itself) is allowed.
+
+4. SOURCE CODE ACCESS
+If source code is publicly visible, this visibility does not grant an open-source
+license. You may read the code for audit and compatibility review only.
+
+5. STRICT PROHIBITIONS
+Unless you have prior written permission from p1kacat, you may NOT:
+- Reupload or mirror source code of the Software.
+- Redistribute modified binaries of the Software.
+- Modify, adapt, or create derivative works for distribution.
+- Copy code, assets, architecture, or implementation details into another project.
+- Publish forks or alternative builds for public distribution.
+- Use project name, icon, branding, or identity to present another project.
+- Use code/assets/datasets of the Software to train or improve AI/ML systems.
+
+6. COMMERCIAL SOFTWARE RESTRICTIONS
+Commercial exploitation of the Software itself is prohibited without prior written
+permission, including paid downloads, paywalled binary access, bundled resale,
+or software-as-a-service based on the Software.
+
+7. CONTRIBUTIONS
+Any contribution submitted to a project under this license (pull request, patch,
+or code snippet) is granted to p1kacat with a perpetual, irrevocable, worldwide,
+royalty-free right to use, modify, and redistribute that contribution under this
+license or a future license chosen by p1kacat.
+
+8. TERMINATION
+Any violation immediately and automatically terminates all rights granted by this
+license. Upon termination, you must stop all use and delete all copies under your
+control.
+
+9. NO WARRANTY / LIABILITY
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED.
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE AUTHOR SHALL NOT BE LIABLE FOR ANY
+CLAIM, DAMAGE, OR LIABILITY ARISING FROM USE OR INABILITY TO USE THE SOFTWARE.
+
+10. LEGAL RESERVATION
+All rights not expressly granted are reserved.
+
+Permission requests: contact p1kacat.
