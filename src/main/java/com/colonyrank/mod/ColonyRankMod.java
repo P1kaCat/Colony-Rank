@@ -1,10 +1,11 @@
 package com.colonyrank.mod;
 
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -19,8 +20,6 @@ import com.colonyrank.mod.command.CommandColonyScore;
 import com.colonyrank.mod.config.ColonyRankGameConfig;
 import com.colonyrank.mod.data.ColonyDataCollector;
 import com.colonyrank.mod.data.ColonyScoreCalculator;
-
-import me.fzzyhmstrs.fzzy_config.registry.ClientConfigRegistry;
 
 @Mod(ColonyRankMod.MODID)
 public class ColonyRankMod {
@@ -41,13 +40,9 @@ public class ColonyRankMod {
         ColonyRankGameConfig.init();
         LOGGER.info("Config en jeu Fzzy initialisee (langue={}, fichier={})", ColonyRankGameConfig.getLanguageCode(), ColonyRankGameConfig.getExpectedConfigPath());
 
-        modContainer.registerExtensionPoint(
-            IConfigScreenFactory.class,
-            (IConfigScreenFactory) (container, modListScreen) -> {
-                var configScreen = ClientConfigRegistry.INSTANCE.provideScreen$fzzy_config(ColonyRankGameConfig.CONFIG_SCREEN_SCOPE);
-                return configScreen != null ? configScreen : modListScreen;
-            }
-        );
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            registerClientConfigScreen(modContainer);
+        }
 
         IEventBus forgeEventBus = NeoForge.EVENT_BUS;
         forgeEventBus.addListener(this::onServerStarting);
@@ -57,6 +52,16 @@ public class ColonyRankMod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Initialisation commune terminee");
+    }
+
+    private static void registerClientConfigScreen(ModContainer modContainer) {
+        try {
+            Class.forName("com.colonyrank.mod.client.ColonyRankClientConfigScreen")
+                .getMethod("register", ModContainer.class)
+                .invoke(null, modContainer);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Impossible d'enregistrer l'ecran de config ColonyRank", e);
+        }
     }
 
     private void onServerStarting(final ServerStartingEvent event) {
