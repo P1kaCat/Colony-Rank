@@ -4,7 +4,7 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="colonyrank"
-version="1.0.0"
+version="1.0.1"
 displayName="ColonyRank"
 authors="PikaCat"
 description='''A server-side mod that ranks MineColonies colonies and provides a leaderboard system.'''

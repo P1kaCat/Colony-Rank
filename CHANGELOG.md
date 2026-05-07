@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.1] - 2026-05-07
+- Fixed dedicated server startup crash caused by loading the client-only config screen on the server.
+
 ## [Initial Release] - 2026-04-17
 ### Initial Release
 - Added colony ranking command: `/colonyrank`
