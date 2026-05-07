@@ -27,7 +27,7 @@ This repository now includes the **Initial Release** of Colony Rank (`initial-re
 
 ## Installation
 1. Build the mod or download the release jar.
-2. Put `ColonyRank-1.21.1.jar` into your `mods` folder.
+2. Put `ColonyRank-1.21.1-1.0.1.jar` into your `mods` folder.
 3. Start the game/server once to generate config files.
 
 ## Configuration

@@ -5,9 +5,11 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.120'
 }
 
-version = '1.0.1'
+def modVersion = '1.0.1'
+version = modVersion
 group = 'com.colonyrank.mod'
 
+def minecraftVersion = '1.21.1'
 def minecoloniesUser = findProperty('minecoloniesUser') ?: System.getenv('MINECOLONIES_USER')
 def minecoloniesToken = findProperty('minecoloniesToken') ?: System.getenv('MINECOLONIES_TOKEN')
 def minecoloniesRepoEnabled = minecoloniesUser && minecoloniesToken
@@ -19,7 +21,7 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 minecraft {
-    version = '1.21.1'
+    version = minecraftVersion
 }
 
 sourceSets.main.resources {
@@ -81,13 +83,15 @@ dependencies {
 }
 
 tasks.named('jar', Jar) {
+    archiveFileName = "ColonyRank-${minecraftVersion}-${modVersion}.jar"
+
     manifest {
         attributes([
             'Specification-Title'     : 'ColonyRank',
             'Specification-Vendor'    : 'PikaCat',
             'Specification-Version'   : '1',
             'Implementation-Title'    : project.name,
-            'Implementation-Version'  : project.version,
+            'Implementation-Version'  : modVersion,
             'Implementation-Vendor'   : 'PikaCat',
             'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
@@ -116,6 +120,11 @@ tasks.register('copyToMods', Copy) {
     dependsOn tasks.named('jar')
     from(tasks.named('jar').flatMap { it.archiveFile })
     into modsDir
+    doFirst {
+        delete fileTree(modsDir) {
+            include 'ColonyRank-*.jar'
+        }
+    }
 }
 
 tasks.named('build') {

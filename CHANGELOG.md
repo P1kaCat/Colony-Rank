@@ -2,6 +2,7 @@
 
 ## [1.0.1] - 2026-05-07
 - Fixed dedicated server startup crash caused by loading the client-only config screen on the server.
+- Changed the built jar filename to `ColonyRank-1.21.1-1.0.1.jar`.
 
 ## [Initial Release] - 2026-04-17
 ### Initial Release
