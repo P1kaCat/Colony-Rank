@@ -1,8 +1,18 @@
 {
   "colonyrank.settings": "ColonyRank Settings",
-  "colonyrank.settings.desc": "In-game configuration for ColonyRank.",
+  "colonyrank.settings.desc": "In-game configuration for ColonyRank, including language and score multipliers. Quota: exactly 2x x5, 2x x10, and 1x x100.",
   "colonyrank.settings.language": "Language",
   "colonyrank.settings.language.desc": "Language used by in-game messages and Discord messages.",
   "colonyrank.settings.language.fr": "French",
-  "colonyrank.settings.language.en": "English"
+  "colonyrank.settings.language.en": "English",
+  "colonyrank.settings.populationMultiplier": "Population multiplier",
+  "colonyrank.settings.populationMultiplier.desc": "Multiplier applied to the population score. Quota enforced across all five slots: 2x x5, 2x x10, and 1x x100.",
+  "colonyrank.settings.buildingMultiplier": "Building multiplier",
+  "colonyrank.settings.buildingMultiplier.desc": "Multiplier applied to the building count score. Quota enforced across all five slots: 2x x5, 2x x10, and 1x x100.",
+  "colonyrank.settings.averageBuildingLevelMultiplier": "Average building level multiplier",
+  "colonyrank.settings.averageBuildingLevelMultiplier.desc": "Multiplier applied to the average building level score. Quota enforced across all five slots: 2x x5, 2x x10, and 1x x100.",
+  "colonyrank.settings.claimedChunksMultiplier": "Claimed chunks multiplier",
+  "colonyrank.settings.claimedChunksMultiplier.desc": "Multiplier applied to claimed chunks. Quota enforced across all five slots: 2x x5, 2x x10, and 1x x100.",
+  "colonyrank.settings.overallHappinessMultiplier": "Overall happiness multiplier",
+  "colonyrank.settings.overallHappinessMultiplier.desc": "Multiplier applied to overall happiness. Quota enforced across all five slots: 2x x5, 2x x10, and 1x x100."
 }

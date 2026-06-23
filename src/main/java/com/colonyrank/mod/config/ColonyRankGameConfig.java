@@ -6,20 +6,42 @@ import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.api.RegisterType;
 import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.event.api.ServerUpdateContext;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedChoice;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedString;
+import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
+import java.util.function.BiFunction;
 
 public class ColonyRankGameConfig extends Config {
     public static final ResourceLocation CONFIG_ID = ResourceLocation.fromNamespaceAndPath(ColonyRankMod.MODID, "settings");
     public static final String CONFIG_SCREEN_SCOPE = ColonyRankMod.MODID;
 
+    private static final int MULTIPLIER_5 = 5;
+    private static final int MULTIPLIER_10 = 10;
+    private static final int MULTIPLIER_100 = 100;
+    private static final int[] MULTIPLIER_VALUES = {MULTIPLIER_5, MULTIPLIER_10, MULTIPLIER_100};
+    private static final int[] MULTIPLIER_COUNTS = {2, 2, 1};
+
+    private static final BiFunction<Integer, String, MutableComponent> MULTIPLIER_LABEL_PROVIDER =
+        (value, key) -> Component.literal("x" + value);
+    private static final BiFunction<Integer, String, Component> MULTIPLIER_DESCRIPTION_PROVIDER =
+        (value, key) -> Component.literal("Multiplier x" + value);
+
     private static ColonyRankGameConfig INSTANCE;
 
     // Must be non-final for Fzzy Config reflection/serialization.
     public ValidatedString language = ValidatedString.fromValues("en", "fr");
+    public ValidatedChoice<Integer> populationMultiplier = createMultiplierChoice(MULTIPLIER_5);
+    public ValidatedChoice<Integer> buildingMultiplier = createMultiplierChoice(MULTIPLIER_10);
+    public ValidatedChoice<Integer> averageBuildingLevelMultiplier = createMultiplierChoice(MULTIPLIER_100);
+    public ValidatedChoice<Integer> claimedChunksMultiplier = createMultiplierChoice(MULTIPLIER_10);
+    public ValidatedChoice<Integer> overallHappinessMultiplier = createMultiplierChoice(MULTIPLIER_5);
 
     public ColonyRankGameConfig() {
         super(CONFIG_ID);
@@ -31,26 +53,37 @@ public class ColonyRankGameConfig extends Config {
         }
         // BOTH ensures the config exists client-side (screen/file) and server-side (synced).
         INSTANCE = ConfigApiJava.registerAndLoadConfig(ColonyRankGameConfig::new, RegisterType.BOTH);
+        INSTANCE.normalizeMultiplierSettings();
     }
 
     @Override
     public void onSyncClient() {
+        normalizeMultiplierSettings();
         LocalizationManager.get().reload();
     }
 
     @Override
     public void onSyncServer() {
+        normalizeMultiplierSettings();
         LocalizationManager.get().reload();
     }
 
     @Override
     public void onUpdateClient() {
+        normalizeMultiplierSettings();
         LocalizationManager.get().reload();
     }
 
     @Override
     public void onUpdateServer(ServerUpdateContext context) {
+        normalizeMultiplierSettings();
         LocalizationManager.get().reload();
+
+        if (ColonyRankMod.getDataCollector() != null && ColonyRankMod.getScoreCalculator() != null) {
+            ColonyRankMod.getScoreCalculator().recalculateAllScores(ColonyRankMod.getDataCollector());
+            ColonyRankMod.getDataCollector().saveColoniesToJson();
+        }
+
         super.onUpdateServer(context);
     }
 
@@ -72,7 +105,111 @@ public class ColonyRankGameConfig extends Config {
         };
     }
 
+    public static int getPopulationMultiplier() {
+        return getMultiplierValue(INSTANCE == null ? null : INSTANCE.populationMultiplier, MULTIPLIER_5);
+    }
+
+    public static int getBuildingMultiplier() {
+        return getMultiplierValue(INSTANCE == null ? null : INSTANCE.buildingMultiplier, MULTIPLIER_10);
+    }
+
+    public static int getAverageBuildingLevelMultiplier() {
+        return getMultiplierValue(INSTANCE == null ? null : INSTANCE.averageBuildingLevelMultiplier, MULTIPLIER_100);
+    }
+
+    public static int getClaimedChunksMultiplier() {
+        return getMultiplierValue(INSTANCE == null ? null : INSTANCE.claimedChunksMultiplier, MULTIPLIER_10);
+    }
+
+    public static int getOverallHappinessMultiplier() {
+        return getMultiplierValue(INSTANCE == null ? null : INSTANCE.overallHappinessMultiplier, MULTIPLIER_5);
+    }
+
     public static String getExpectedConfigPath() {
         return Path.of("config", ColonyRankMod.MODID, "settings.toml").toAbsolutePath().toString();
     }
+
+    private static ValidatedChoice<Integer> createMultiplierChoice(int defaultValue) {
+        return new ValidatedChoice<>(
+            defaultValue,
+            List.of(MULTIPLIER_5, MULTIPLIER_10, MULTIPLIER_100),
+            new ValidatedInt(),
+            MULTIPLIER_LABEL_PROVIDER,
+            MULTIPLIER_DESCRIPTION_PROVIDER,
+            ValidatedChoice.WidgetType.CYCLING
+        );
+    }
+
+    private static int getMultiplierValue(ValidatedChoice<Integer> choice, int fallback) {
+        if (choice == null) {
+            return fallback;
+        }
+
+        Integer value = choice.get();
+        return value != null ? value : fallback;
+    }
+
+    private void normalizeMultiplierSettings() {
+        List<ValidatedChoice<Integer>> fields = List.of(
+            populationMultiplier,
+            buildingMultiplier,
+            averageBuildingLevelMultiplier,
+            claimedChunksMultiplier,
+            overallHappinessMultiplier
+        );
+
+        int[] remaining = MULTIPLIER_COUNTS.clone();
+        Integer[] resolved = new Integer[fields.size()];
+
+        for (int i = 0; i < fields.size(); i++) {
+            Integer requested = fields.get(i).get();
+            int multiplierIndex = indexOfMultiplier(requested);
+            if (multiplierIndex >= 0 && remaining[multiplierIndex] > 0) {
+                resolved[i] = requested;
+                remaining[multiplierIndex]--;
+            }
+        }
+
+        for (int i = 0; i < fields.size(); i++) {
+            if (resolved[i] != null) {
+                continue;
+            }
+
+            for (int j = 0; j < MULTIPLIER_VALUES.length; j++) {
+                if (remaining[j] > 0) {
+                    resolved[i] = MULTIPLIER_VALUES[j];
+                    remaining[j]--;
+                    break;
+                }
+            }
+        }
+
+        boolean changed = false;
+        for (int i = 0; i < fields.size(); i++) {
+            int newValue = resolved[i] != null ? resolved[i] : MULTIPLIER_VALUES[0];
+            Integer current = fields.get(i).get();
+            if (current == null || current.intValue() != newValue) {
+                fields.get(i).trySetQuiet(newValue);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            save();
+        }
+    }
+
+    private static int indexOfMultiplier(Integer value) {
+        if (value == null) {
+            return -1;
+        }
+
+        for (int i = 0; i < MULTIPLIER_VALUES.length; i++) {
+            if (MULTIPLIER_VALUES[i] == value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }

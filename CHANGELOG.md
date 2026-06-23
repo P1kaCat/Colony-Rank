@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0] - 2026-06-23
+- Added an in-game Fzzy Config screen for language and score settings.
+- Added configurable score multipliers for population, buildings, average building level, claimed chunks, and overall happiness.
+- Enforced multiplier quota across the five slots: exactly `2x5`, `2x10`, and `1x100`.
+- Wired score calculation and score breakdown display to the new config values.
+- Added localized FR/EN labels and descriptions for the new config entries.
+- Updated the built jar filename to `ColonyRank-1.21.1-1.1.0.jar`.
+
 ## [1.0.1] - 2026-05-07
 - Fixed dedicated server startup crash caused by loading the client-only config screen on the server.
 - Changed the built jar filename to `ColonyRank-1.21.1-1.0.1.jar`.

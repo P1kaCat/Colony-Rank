@@ -1,6 +1,6 @@
 # Colony Rank
 
-A NeoForge mod for Minecraft 1.21.1 that ranks MineColonies colonies with a transparent scoring system and optional Discord leaderboard publishing.
+A NeoForge mod for Minecraft 1.21.1 that ranks MineColonies colonies with a transparent, configurable scoring system and optional Discord leaderboard publishing.
 
 ## Initial Release
 This repository now includes the **Initial Release** of Colony Rank (`initial-release`).
@@ -9,10 +9,11 @@ This repository now includes the **Initial Release** of Colony Rank (`initial-re
 - Live colony ranking with `/colonyrank`
 - Detailed colony score view with `/colonyscore`
 - Admin tools with `/colonyadmin` (`reload`, `refresh`, `status`, `sendleaderboard`, `senddaily`, etc.)
+- In-game Fzzy Config screen for language and score multipliers
 - Score components:
   - Population
   - Buildings
-  - Normalized average building level (scaled to /5)
+  - Average building level
   - Claimed chunks
   - Overall happiness
 - Colony age display in ranking/details
@@ -27,7 +28,7 @@ This repository now includes the **Initial Release** of Colony Rank (`initial-re
 
 ## Installation
 1. Build the mod or download the release jar.
-2. Put `ColonyRank-1.21.1-1.0.1.jar` into your `mods` folder.
+2. Put `ColonyRank-1.21.1-1.1.0.jar` into your `mods` folder.
 3. Start the game/server once to generate config files.
 
 ## Configuration
@@ -35,6 +36,17 @@ This repository now includes the **Initial Release** of Colony Rank (`initial-re
 - Config id: `colonyrank:settings`
 - Default language: `en`
 - Values: `en` or `fr`
+
+### Score multipliers (in-game config)
+- Population multiplier
+- Buildings multiplier
+- Average building level multiplier
+- Claimed chunks multiplier
+- Overall happiness multiplier
+- The five slots are limited to exactly `2x5`, `2x10`, and `1x100`
+
+Current score formula:
+`(Population × multiplier) + (Buildings × multiplier) + (Average Building Level × multiplier) + (Claimed Chunks × multiplier) + (Overall Happiness × multiplier)`
 
 ### Discord integration
 File: `config/colonyrank-discord.properties`

@@ -129,8 +129,8 @@ public final class LocalizationManager {
 
             case "score.breakdown":
                 return en
-                    ? "Population: %.1f | Buildings: %.1f | Levels: %.1f | Chunks: %.1f | Happiness: %.1f"
-                    : "Population: %.1f | Batiments: %.1f | Niveaux: %.1f | Chunks: %.1f | Bonheur: %.1f";
+                    ? "Population: %.1f (x%d) | Buildings: %.1f (x%d) | Avg level: %.1f (x%d) | Chunks: %.1f (x%d) | Happiness: %.1f (x%d)"
+                    : "Population: %.1f (x%d) | Batiments: %.1f (x%d) | Niveau moyen: %.1f (x%d) | Chunks: %.1f (x%d) | Bonheur: %.1f (x%d)";
 
             case "admin.collector_not_initialized":
                 return en ? "Collector is not initialized" : "Collecteur non initialise";

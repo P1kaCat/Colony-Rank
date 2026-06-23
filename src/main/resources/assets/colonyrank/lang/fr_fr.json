@@ -1,8 +1,18 @@
 {
   "colonyrank.settings": "Parametres ColonyRank",
-  "colonyrank.settings.desc": "Configuration en jeu de ColonyRank.",
+  "colonyrank.settings.desc": "Configuration en jeu de ColonyRank, avec la langue et les multiplicateurs de score. Quota: exactement 2x x5, 2x x10 et 1x x100.",
   "colonyrank.settings.language": "Langue",
   "colonyrank.settings.language.desc": "Langue utilisee par les messages en jeu et Discord.",
   "colonyrank.settings.language.fr": "Francais",
-  "colonyrank.settings.language.en": "Anglais"
+  "colonyrank.settings.language.en": "Anglais",
+  "colonyrank.settings.populationMultiplier": "Multiplicateur de population",
+  "colonyrank.settings.populationMultiplier.desc": "Multiplicateur applique au score de population. Quota global sur les cinq slots: 2x x5, 2x x10 et 1x x100.",
+  "colonyrank.settings.buildingMultiplier": "Multiplicateur de batiments",
+  "colonyrank.settings.buildingMultiplier.desc": "Multiplicateur applique au score du nombre de batiments. Quota global sur les cinq slots: 2x x5, 2x x10 et 1x x100.",
+  "colonyrank.settings.averageBuildingLevelMultiplier": "Multiplicateur du niveau moyen",
+  "colonyrank.settings.averageBuildingLevelMultiplier.desc": "Multiplicateur applique au score du niveau moyen des batiments. Quota global sur les cinq slots: 2x x5, 2x x10 et 1x x100.",
+  "colonyrank.settings.claimedChunksMultiplier": "Multiplicateur des chunks claims",
+  "colonyrank.settings.claimedChunksMultiplier.desc": "Multiplicateur applique aux chunks claims. Quota global sur les cinq slots: 2x x5, 2x x10 et 1x x100.",
+  "colonyrank.settings.overallHappinessMultiplier": "Multiplicateur du bonheur global",
+  "colonyrank.settings.overallHappinessMultiplier.desc": "Multiplicateur applique au bonheur global. Quota global sur les cinq slots: 2x x5, 2x x10 et 1x x100."
 }
