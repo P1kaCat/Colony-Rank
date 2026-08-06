@@ -30,7 +30,7 @@ out/
 ehthumbs.db
 
 # Data
-data/
+/data/
 logs/
 *.log
 

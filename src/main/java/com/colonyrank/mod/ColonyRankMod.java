@@ -34,11 +34,15 @@ public class ColonyRankMod {
     private static final long DAILY_CHECK_INTERVAL_TICKS = 200;
 
     public ColonyRankMod(IEventBus modEventBus, ModContainer modContainer) {
-        LOGGER.info("Initialisation du mod ColonyRank...");
+        LOGGER.info("Initialisation du mod ColonyRank 2.0.0...");
 
         modEventBus.addListener(this::commonSetup);
         ColonyRankGameConfig.init();
-        LOGGER.info("Config en jeu Fzzy initialisee (langue={}, fichier={})", ColonyRankGameConfig.getLanguageCode(), ColonyRankGameConfig.getExpectedConfigPath());
+        LOGGER.info("Config Fzzy initialisee (langue={}, mode={}, preset={}, fichier={})",
+            ColonyRankGameConfig.getLanguageCode(),
+            ColonyRankGameConfig.getScoringMode(),
+            ColonyRankGameConfig.getNewPreset(),
+            ColonyRankGameConfig.getExpectedConfigPath());
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             registerClientConfigScreen(modContainer);
@@ -92,6 +96,10 @@ public class ColonyRankMod {
 
             if (dataCollector != null) {
                 dataCollector.updateAllColonies(event.getServer());
+                if (scoreCalculator != null) {
+                    scoreCalculator.recalculateAllScores(dataCollector);
+                }
+                dataCollector.saveColoniesToJson();
             }
         }
 

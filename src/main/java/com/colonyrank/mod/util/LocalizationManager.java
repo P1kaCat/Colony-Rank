@@ -232,6 +232,30 @@ public final class LocalizationManager {
             case "discord.footer":
                 return en ? "Last update: %s | Total colonies: %d" : "Derniere maj: %s | Colonies totales: %d";
 
+            case "score.breakdown.new":
+                return en
+                    ? "Pop: %.1f (x%.1f) | Happiness: %.1f (%dx%.1fx%.1f) | Buildings: %.1f (x%.1f) | Level: %.1f (%.2fx%dx%.1f) | Claims: %.1f (x%.1f) | Subtotal: %.1f x5 = %.0f"
+                    : "Pop: %.1f (x%.1f) | Bonheur: %.1f (%dx%.1fx%.1f) | Batiments: %.1f (x%.1f) | Niveau: %.1f (%.2fx%dx%.1f) | Claims: %.1f (x%.1f) | Sous-total: %.1f x5 = %.0f";
+
+            case "admin.status.scoring_mode":
+                return en ? "Scoring mode: %s" : "Mode de score: %s";
+            case "admin.status.new_preset":
+                return en ? "New preset: %s" : "Preset (new): %s";
+
+            case "admin.scoring.switched":
+                return en ? "Scoring mode switched to: %s" : "Mode de score change: %s";
+            case "admin.scoring.preset_switched":
+                return en ? "New preset switched to: %s" : "Preset (new) change: %s";
+            case "admin.scoring.invalid_mode":
+                return en ? "Invalid scoring mode: %s. Use 'old' or 'new'." : "Mode de score invalide: %s. Utilisez 'old' ou 'new'.";
+            case "admin.scoring.invalid_preset":
+                return en ? "Invalid preset: %s. Available: developpement, population, expansion, gestion, metropole." : "Preset invalide: %s. Disponibles: developpement, population, expansion, gestion, metropole.";
+
+            case "admin.help.scoringmode":
+                return en ? "/colonyadmin scoringmode <old|new> - Switch scoring system" : "/colonyadmin scoringmode <old|new> - Changer le systeme de score";
+            case "admin.help.preset":
+                return en ? "/colonyadmin preset <name> - Set NEW mode preset" : "/colonyadmin preset <name> - Definir le preset du mode NEW";
+
             default:
                 return key;
         }

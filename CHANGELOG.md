@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0] - 2026-08-06
+- Complete scoring system overhaul with two independent modes: OLD and NEW.
+- OLD mode: Preserves the historical multiplier-based system (quota: 2x x5, 2x x10, 1x x100).
+- NEW mode: Cross-product scoring system linking stats (Population x Happiness, AvgLevel x Buildings).
+  - Score formula: Score = (Population + Happiness + Buildings + Level + Claims) x 5
+  - Cross-products: Bonheur = PNJ x Bonheur x coef, Niveau = Niveau moyen x Bâtiments x coef
+- Added 5 NEW presets: Developpement, Population, Expansion, Gestion, Metropole.
+- Added 5 OLD presets: Original, Population, Expansion, Gestion, Metropole.
+- Integrated scoring mode and preset selection via Fzzy Config.
+- Updated score breakdown display for both modes.
+- Updated localization (EN/FR) for new config entries and scoring messages.
+- Updated jar filename to ColonyRank-1.21.1-2.0.0.jar.
+
 ## [1.1.0] - 2026-06-23
 - Added an in-game Fzzy Config screen for language and score settings.
 - Added configurable score multipliers for population, buildings, average building level, claimed chunks, and overall happiness.

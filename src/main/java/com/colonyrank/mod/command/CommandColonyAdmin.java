@@ -1,8 +1,11 @@
 package com.colonyrank.mod.command;
 
 import com.colonyrank.mod.ColonyRankMod;
+import com.colonyrank.mod.config.ColonyRankGameConfig;
+import com.colonyrank.mod.data.ColonyScoreCalculator;
 import com.colonyrank.mod.util.LocalizationManager;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -43,10 +46,63 @@ public class CommandColonyAdmin {
                 .then(Commands.literal("senddaily")
                     .executes(CommandColonyAdmin::executeSendDaily)
                 )
+                .then(Commands.literal("scoringmode")
+                    .then(Commands.argument("mode", StringArgumentType.string())
+                        .executes(CommandColonyAdmin::executeSetScoringMode)
+                    )
+                )
+                .then(Commands.literal("preset")
+                    .then(Commands.argument("preset", StringArgumentType.string())
+                        .executes(CommandColonyAdmin::executeSetPreset)
+                    )
+                )
                 .then(Commands.literal("help")
                     .executes(CommandColonyAdmin::executeHelp)
                 )
         );
+    }
+
+    private static int executeSetScoringMode(CommandContext<CommandSourceStack> context) {
+        I18N.reload();
+        CommandSourceStack source = context.getSource();
+        String mode = StringArgumentType.getString(context, "mode").trim().toLowerCase();
+
+        if (!mode.equals("old") && !mode.equals("new")) {
+            source.sendFailure(Component.literal("\u00A7c" + I18N.t("admin.scoring.invalid_mode", mode)));
+            return 0;
+        }
+
+        ColonyRankGameConfig.setScoringMode(mode);
+
+        if (ColonyRankMod.getDataCollector() != null && ColonyRankMod.getScoreCalculator() != null) {
+            ColonyRankMod.getScoreCalculator().recalculateAllScores(ColonyRankMod.getDataCollector());
+            ColonyRankMod.getDataCollector().saveColoniesToJson();
+        }
+
+        source.sendSuccess(() -> Component.literal("\u00A7a" + I18N.t("admin.scoring.switched", mode.toUpperCase())), true);
+        return 1;
+    }
+
+    private static int executeSetPreset(CommandContext<CommandSourceStack> context) {
+        I18N.reload();
+        CommandSourceStack source = context.getSource();
+        String preset = StringArgumentType.getString(context, "preset").trim().toLowerCase();
+
+        if (!preset.equals("developpement") && !preset.equals("population") &&
+            !preset.equals("expansion") && !preset.equals("gestion") && !preset.equals("metropole")) {
+            source.sendFailure(Component.literal("\u00A7c" + I18N.t("admin.scoring.invalid_preset", preset)));
+            return 0;
+        }
+
+        ColonyRankGameConfig.setNewPreset(preset);
+
+        if (ColonyRankMod.getDataCollector() != null && ColonyRankMod.getScoreCalculator() != null) {
+            ColonyRankMod.getScoreCalculator().recalculateAllScores(ColonyRankMod.getDataCollector());
+            ColonyRankMod.getDataCollector().saveColoniesToJson();
+        }
+
+        source.sendSuccess(() -> Component.literal("\u00A7a" + I18N.t("admin.scoring.preset_switched", preset)), true);
+        return 1;
     }
 
     private static int executeSendLeaderboard(CommandContext<CommandSourceStack> context) {
@@ -204,6 +260,10 @@ public class CommandColonyAdmin {
 
         source.sendSuccess(() -> Component.literal("\u00A7a" + I18N.t("admin.status.collector_running")), false);
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.status.colonies_cache", ColonyRankMod.getDataCollector().getColonyCount())), false);
+        source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.status.scoring_mode", ColonyRankGameConfig.getScoringMode().toUpperCase())), false);
+        if (ColonyRankGameConfig.getScoringMode().equals(ColonyScoreCalculator.MODE_NEW)) {
+            source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.status.new_preset", ColonyRankGameConfig.getNewPreset())), false);
+        }
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.status.json_file")), false);
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.status.language", I18N.getLanguageCode())), false);
         source.sendSuccess(() -> Component.literal("\u00A76" + I18N.t("admin.status.footer")), false);
@@ -244,6 +304,8 @@ public class CommandColonyAdmin {
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.help.export")), false);
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.help.discordstatus")), false);
         source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.help.senddaily")), false);
+        source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.help.scoringmode")), false);
+        source.sendSuccess(() -> Component.literal("\u00A7e" + I18N.t("admin.help.preset")), false);
         source.sendSuccess(() -> Component.literal("\u00A76" + I18N.t("admin.help.footer")), false);
 
         return 1;

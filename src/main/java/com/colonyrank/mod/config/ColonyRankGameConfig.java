@@ -35,13 +35,22 @@ public class ColonyRankGameConfig extends Config {
 
     private static ColonyRankGameConfig INSTANCE;
 
-    // Must be non-final for Fzzy Config reflection/serialization.
-    public ValidatedString language = ValidatedString.fromValues("en", "fr");
+    // --- Scoring mode (OLD or NEW) ---
+    public ValidatedString scoringMode = ValidatedString.fromValues("new", "old", "new");
+
+    // --- NEW mode preset ---
+    public ValidatedString newPreset = ValidatedString.fromValues("developpement",
+        "developpement", "population", "expansion", "gestion", "metropole");
+
+    // --- OLD mode multiplier fields (with quota: 2x x5, 2x x10, 1x x100) ---
     public ValidatedChoice<Integer> populationMultiplier = createMultiplierChoice(MULTIPLIER_5);
     public ValidatedChoice<Integer> buildingMultiplier = createMultiplierChoice(MULTIPLIER_10);
     public ValidatedChoice<Integer> averageBuildingLevelMultiplier = createMultiplierChoice(MULTIPLIER_100);
     public ValidatedChoice<Integer> claimedChunksMultiplier = createMultiplierChoice(MULTIPLIER_10);
     public ValidatedChoice<Integer> overallHappinessMultiplier = createMultiplierChoice(MULTIPLIER_5);
+
+    // --- Language ---
+    public ValidatedString language = ValidatedString.fromValues("en", "fr");
 
     public ColonyRankGameConfig() {
         super(CONFIG_ID);
@@ -51,7 +60,6 @@ public class ColonyRankGameConfig extends Config {
         if (INSTANCE != null) {
             return;
         }
-        // BOTH ensures the config exists client-side (screen/file) and server-side (synced).
         INSTANCE = ConfigApiJava.registerAndLoadConfig(ColonyRankGameConfig::new, RegisterType.BOTH);
         INSTANCE.normalizeMultiplierSettings();
     }
@@ -87,16 +95,53 @@ public class ColonyRankGameConfig extends Config {
         super.onUpdateServer(context);
     }
 
+    // --- Scoring mode ---
+    public static String getScoringMode() {
+        if (INSTANCE == null) return "new";
+        String raw = INSTANCE.scoringMode.get();
+        if (raw == null) return "new";
+        String normalized = raw.trim().toLowerCase(Locale.ROOT);
+        return "old".equals(normalized) ? "old" : "new";
+    }
+
+    // --- NEW preset ---
+    public static String getNewPreset() {
+        if (INSTANCE == null) return "developpement";
+        String raw = INSTANCE.newPreset.get();
+        if (raw == null) return "developpement";
+        String normalized = raw.trim().toLowerCase(Locale.ROOT);
+        return switch (normalized) {
+            case "population" -> "population";
+            case "expansion" -> "expansion";
+            case "gestion" -> "gestion";
+            case "metropole" -> "metropole";
+            default -> "developpement";
+        };
+    }
+
+    public static void setScoringMode(String mode) {
+        if (INSTANCE == null) return;
+        String normalized = mode.trim().toLowerCase(Locale.ROOT);
+        if (!"old".equals(normalized) && !"new".equals(normalized)) return;
+        INSTANCE.scoringMode.trySetQuiet(normalized);
+        INSTANCE.save();
+    }
+
+    public static void setNewPreset(String preset) {
+        if (INSTANCE == null) return;
+        String normalized = preset.trim().toLowerCase(Locale.ROOT);
+        if (!normalized.equals("developpement") && !normalized.equals("population") &&
+            !normalized.equals("expansion") && !normalized.equals("gestion") &&
+            !normalized.equals("metropole")) return;
+        INSTANCE.newPreset.trySetQuiet(normalized);
+        INSTANCE.save();
+    }
+
+    // --- Language ---
     public static String getLanguageCode() {
-        if (INSTANCE == null) {
-            return null;
-        }
-
+        if (INSTANCE == null) return null;
         String raw = INSTANCE.language.get();
-        if (raw == null) {
-            return null;
-        }
-
+        if (raw == null) return null;
         String normalized = raw.trim().toLowerCase(Locale.ROOT);
         return switch (normalized) {
             case "en" -> "en";
@@ -105,6 +150,7 @@ public class ColonyRankGameConfig extends Config {
         };
     }
 
+    // --- OLD mode multipliers ---
     public static int getPopulationMultiplier() {
         return getMultiplierValue(INSTANCE == null ? null : INSTANCE.populationMultiplier, MULTIPLIER_5);
     }
@@ -141,10 +187,7 @@ public class ColonyRankGameConfig extends Config {
     }
 
     private static int getMultiplierValue(ValidatedChoice<Integer> choice, int fallback) {
-        if (choice == null) {
-            return fallback;
-        }
-
+        if (choice == null) return fallback;
         Integer value = choice.get();
         return value != null ? value : fallback;
     }
@@ -171,10 +214,7 @@ public class ColonyRankGameConfig extends Config {
         }
 
         for (int i = 0; i < fields.size(); i++) {
-            if (resolved[i] != null) {
-                continue;
-            }
-
+            if (resolved[i] != null) continue;
             for (int j = 0; j < MULTIPLIER_VALUES.length; j++) {
                 if (remaining[j] > 0) {
                     resolved[i] = MULTIPLIER_VALUES[j];
@@ -200,16 +240,10 @@ public class ColonyRankGameConfig extends Config {
     }
 
     private static int indexOfMultiplier(Integer value) {
-        if (value == null) {
-            return -1;
-        }
-
+        if (value == null) return -1;
         for (int i = 0; i < MULTIPLIER_VALUES.length; i++) {
-            if (MULTIPLIER_VALUES[i] == value) {
-                return i;
-            }
+            if (MULTIPLIER_VALUES[i] == value) return i;
         }
         return -1;
     }
-
 }
