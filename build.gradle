@@ -2,14 +2,15 @@ plugins {
     id 'java'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.120'
+    id 'net.minecraftforge.gradle' version '6.0.+'
 }
 
 def modVersion = '2.0.0'
 version = modVersion
 group = 'com.colonyrank.mod'
 
-def minecraftVersion = '1.21.1'
+def minecraftVersion = '1.20.1'
+def forgeVersion = '47.4.10'
 def minecoloniesUser = findProperty('minecoloniesUser') ?: System.getenv('MINECOLONIES_USER')
 def minecoloniesToken = findProperty('minecoloniesToken') ?: System.getenv('MINECOLONIES_TOKEN')
 def minecoloniesRepoEnabled = minecoloniesUser && minecoloniesToken
@@ -18,10 +19,11 @@ base {
     archivesName = 'ColonyRank'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    version = minecraftVersion
+    version = "${minecraftVersion}-${forgeVersion}"
+    mappings channel: 'official', version: minecraftVersion
 }
 
 sourceSets.main.resources {
@@ -45,9 +47,6 @@ repositories {
         url = 'https://libraries.minecraft.net'
     }
     maven {
-        url = 'https://maven.neoforged.net/releases'
-    }
-    maven {
         url = 'https://maven.minecraftforge.net'
     }
     mavenCentral()
@@ -67,8 +66,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.1.219'
-    implementation 'me.fzzyhmstrs:fzzy_config:0.7.6+1.21+neoforge'
+    implementation "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"
+    implementation 'me.fzzyhmstrs:fzzy_config:0.7.5+1.20.1+forge'
 
     // MineColonies API
     if (minecoloniesRepoEnabled) {

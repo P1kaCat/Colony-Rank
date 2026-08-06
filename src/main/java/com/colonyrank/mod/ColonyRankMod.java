@@ -1,15 +1,15 @@
 package com.colonyrank.mod;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,10 @@ public class ColonyRankMod {
     private static long lastDailyCheckTick = 0;
     private static final long DAILY_CHECK_INTERVAL_TICKS = 200;
 
-    public ColonyRankMod(IEventBus modEventBus, ModContainer modContainer) {
+    public ColonyRankMod() {
         LOGGER.info("Initialisation du mod ColonyRank 2.0.0...");
 
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
         ColonyRankGameConfig.init();
         LOGGER.info("Config Fzzy initialisee (langue={}, mode={}, preset={}, fichier={})",
@@ -45,10 +46,10 @@ public class ColonyRankMod {
             ColonyRankGameConfig.getExpectedConfigPath());
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            registerClientConfigScreen(modContainer);
+            registerClientConfigScreen();
         }
 
-        IEventBus forgeEventBus = NeoForge.EVENT_BUS;
+        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
         forgeEventBus.addListener(this::onServerStarting);
         forgeEventBus.addListener(this::onServerStopping);
         forgeEventBus.addListener(this::onServerTick);
@@ -58,11 +59,11 @@ public class ColonyRankMod {
         LOGGER.info("Initialisation commune terminee");
     }
 
-    private static void registerClientConfigScreen(ModContainer modContainer) {
+    private static void registerClientConfigScreen() {
         try {
             Class.forName("com.colonyrank.mod.client.ColonyRankClientConfigScreen")
-                .getMethod("register", ModContainer.class)
-                .invoke(null, modContainer);
+                .getMethod("register")
+                .invoke(null);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Impossible d'enregistrer l'ecran de config ColonyRank", e);
         }
@@ -89,7 +90,10 @@ public class ColonyRankMod {
         }
     }
 
-    private void onServerTick(final ServerTickEvent.Post event) {
+    private void onServerTick(final TickEvent.ServerTickEvent event) {
+        // Only run on END phase to avoid running twice per tick
+        if (event.phase != TickEvent.Phase.END) return;
+
         long tick = event.getServer().getTickCount();
         if (tick - lastUpdateTick >= UPDATE_INTERVAL_TICKS) {
             lastUpdateTick = tick;

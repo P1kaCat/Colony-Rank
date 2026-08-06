@@ -19,7 +19,7 @@ import java.util.Locale;
 import java.util.function.BiFunction;
 
 public class ColonyRankGameConfig extends Config {
-    public static final ResourceLocation CONFIG_ID = ResourceLocation.fromNamespaceAndPath(ColonyRankMod.MODID, "settings");
+    public static final ResourceLocation CONFIG_ID = new ResourceLocation(ColonyRankMod.MODID, "settings");
     public static final String CONFIG_SCREEN_SCOPE = ColonyRankMod.MODID;
 
     private static final int MULTIPLIER_5 = 5;
