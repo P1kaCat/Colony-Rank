@@ -102,9 +102,9 @@ public class CommandColonyAdmin {
         CommandSourceStack source = context.getSource();
         String preset = StringArgumentType.getString(context, "preset").trim().toLowerCase();
 
-        if (!preset.equals("developpement") && !preset.equals("population") &&
-            !preset.equals("expansion") && !preset.equals("gestion") &&
-            !preset.equals("metropole") && !preset.equals("custom")) {
+        if (!preset.equals("development") && !preset.equals("developpement") && !preset.equals("population") &&
+            !preset.equals("expansion") && !preset.equals("management") && !preset.equals("gestion") &&
+            !preset.equals("metropolis") && !preset.equals("metropole") && !preset.equals("custom")) {
             source.sendFailure(Component.literal("\u00A7c" + I18N.t("admin.scoring.invalid_preset", preset)));
             return 0;
         }

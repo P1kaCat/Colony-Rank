@@ -42,11 +42,11 @@ public class ColonyScoreCalculator {
      * Final: (Pop + Bonheur + Bât + Niveau + Claims) × 5
      */
     public enum NewPreset {
-        DEVELOPPEMENT(5, 0.4, 5, 2.5, 0.5),
+        DEVELOPMENT(5, 0.4, 5, 2.5, 0.5),
         POPULATION(10, 0.6, 5, 1.5, 0.5),
         EXPANSION(5, 0.4, 8, 1.5, 2),
-        GESTION(5, 1.0, 6, 1.5, 0.5),
-        METROPOLE(5, 0.4, 12, 1.0, 1);
+        MANAGEMENT(5, 1.0, 6, 1.5, 0.5),
+        METROPOLIS(5, 0.4, 12, 1.0, 1);
 
         public final double popCoef;
         public final double happinessCoef;
@@ -63,14 +63,14 @@ public class ColonyScoreCalculator {
         }
 
         public static NewPreset fromName(String name) {
-            if (name == null) return DEVELOPPEMENT;
+            if (name == null) return DEVELOPMENT;
             return switch (name.trim().toLowerCase(Locale.ROOT)) {
                 case "population" -> POPULATION;
                 case "expansion" -> EXPANSION;
-                case "gestion" -> GESTION;
-                case "metropole" -> METROPOLE;
+                case "management", "gestion" -> MANAGEMENT; // backward compat
+                case "metropolis", "metropole" -> METROPOLIS; // backward compat
                 case "custom" -> null; // Custom uses config coefficients
-                default -> DEVELOPPEMENT;
+                default -> DEVELOPMENT; // also handles legacy "developpement"
             };
         }
 
@@ -80,7 +80,7 @@ public class ColonyScoreCalculator {
     }
 
     public ColonyScoreCalculator() {
-        LOGGER.info("ColonyScoreCalculator initialise");
+        LOGGER.info("ColonyScoreCalculator initialised");
     }
 
     /**
@@ -116,7 +116,7 @@ public class ColonyScoreCalculator {
             colony.setScore(score);
         }
 
-        LOGGER.debug("Scores OLD recalculés pour {} colonies", collector.getColonyCount());
+        LOGGER.debug("OLD scores recalculated for {} colonies", collector.getColonyCount());
     }
 
     /**
@@ -157,7 +157,7 @@ public class ColonyScoreCalculator {
             colony.setScore(score);
         }
 
-        LOGGER.debug("Scores NEW (preset={}) recalculés pour {} colonies", presetName, collector.getColonyCount());
+        LOGGER.debug("NEW scores (preset={}) recalculated for {} colonies", presetName, collector.getColonyCount());
     }
 
     /**
