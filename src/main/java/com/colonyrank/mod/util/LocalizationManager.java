@@ -188,18 +188,47 @@ public final class LocalizationManager {
                 return en ? "Collector: NOT INITIALIZED" : "Collecteur: NON INITIALISE";
             case "admin.status.colonies_cache":
                 return en ? "Colonies in cache: %d" : "Colonies en cache: %d";
+            case "admin.status.ignored_colonies":
+                return en ? "Ignored colonies: %d" : "Colonies ignorees: %d";
             case "admin.status.json_file":
                 return en ? "JSON file: data/colonyrank/colonies.json" : "Fichier JSON: data/colonyrank/colonies.json";
             case "admin.status.language":
                 return en ? "Language: %s" : "Langue: %s";
             case "admin.status.footer":
                 return en ? "=====================================" : "=====================================";
-            case "admin.export.start":
-                return en ? "Exporting colonies to JSON..." : "Export des colonies en JSON...";
-            case "admin.export.done":
-                return en ? "Export complete! File: data/colonyrank/colonies.json" : "Export termine ! Fichier: data/colonyrank/colonies.json";
-            case "admin.export.error":
-                return en ? "Error during export: %s" : "Erreur pendant l export: %s";
+            case "admin.status.scoring_mode":
+                return en ? "Scoring mode: %s" : "Mode de score: %s";
+            case "admin.status.new_preset":
+                return en ? "New preset: %s" : "Preset (new): %s";
+
+            case "admin.scoring.switched":
+                return en ? "Scoring mode switched to: %s" : "Mode de score change: %s";
+            case "admin.scoring.preset_switched":
+                return en ? "New preset switched to: %s" : "Preset (new) change: %s";
+            case "admin.scoring.invalid_mode":
+                return en ? "Invalid scoring mode: %s. Use 'old' or 'new'." : "Mode de score invalide: %s. Utilisez 'old' ou 'new'.";
+            case "admin.scoring.invalid_preset":
+                return en ? "Invalid preset: %s. Available: developpement, population, expansion, gestion, metropole, custom." : "Preset invalide: %s. Disponibles: developpement, population, expansion, gestion, metropole, custom.";
+
+            case "admin.ignore.not_found":
+                return en ? "Colony ID %d does not exist in the cache." : "La colonie ID %d n existe pas dans le cache.";
+            case "admin.ignore.already_ignored":
+                return en ? "Colony ID %d is already ignored." : "La colonie ID %d est deja ignoree.";
+            case "admin.ignore.added":
+                return en ? "Colony ID %d (%s) is now ignored." : "La colonie ID %d (%s) est maintenant ignoree.";
+            case "admin.unignore.not_ignored":
+                return en ? "Colony ID %d is not ignored." : "La colonie ID %d n est pas ignoree.";
+            case "admin.unignore.removed":
+                return en ? "Colony ID %d is no longer ignored." : "La colonie ID %d n est plus ignoree.";
+            case "admin.ignorelist.header":
+                return en ? "========== IGNORED COLONIES (%d) ==========" : "========== COLONIES IGNOREES (%d) ==========";
+            case "admin.ignorelist.empty":
+                return en ? "No ignored colonies." : "Aucune colonie ignoree.";
+            case "admin.ignorelist.entry":
+                return en ? "ID %d - %s" : "ID %d - %s";
+            case "admin.ignorelist.footer":
+                return en ? "=========================================" : "===========================================";
+
             case "admin.help.header":
                 return en ? "========== COLONYADMIN HELP ==========" : "========== AIDE COLONYADMIN ==========";
             case "admin.help.reload":
@@ -216,6 +245,16 @@ public final class LocalizationManager {
                 return en ? "/colonyadmin discordstatus - Discord config status" : "/colonyadmin discordstatus - Etat config Discord";
             case "admin.help.senddaily":
                 return en ? "/colonyadmin senddaily - Force daily send" : "/colonyadmin senddaily - Forcer l envoi quotidien";
+            case "admin.help.scoringmode":
+                return en ? "/colonyadmin scoringmode <old|new> - Switch scoring system" : "/colonyadmin scoringmode <old|new> - Changer le systeme de score";
+            case "admin.help.preset":
+                return en ? "/colonyadmin preset <name> - Set NEW mode preset (developpement, population, expansion, gestion, metropole, custom)" : "/colonyadmin preset <name> - Definir le preset du mode NEW (developpement, population, expansion, gestion, metropole, custom)";
+            case "admin.help.ignore":
+                return en ? "/colonyadmin ignore <colonyId> - Ignore a colony (excluded from ranking)" : "/colonyadmin ignore <colonyId> - Ignorer une colonie (exclue du classement)";
+            case "admin.help.unignore":
+                return en ? "/colonyadmin unignore <colonyId> - Unignore a colony" : "/colonyadmin unignore <colonyId> - Ne plus ignorer une colonie";
+            case "admin.help.ignorelist":
+                return en ? "/colonyadmin ignorelist - List ignored colonies" : "/colonyadmin ignorelist - Lister les colonies ignorees";
             case "admin.help.footer":
                 return en ? "=====================================" : "=====================================";
 
@@ -236,25 +275,6 @@ public final class LocalizationManager {
                 return en
                     ? "Pop: %.1f (x%.1f) | Happiness: %.1f (%dx%.1fx%.1f) | Buildings: %.1f (x%.1f) | Level: %.1f (%.2fx%dx%.1f) | Claims: %.1f (x%.1f) | Subtotal: %.1f x5 = %.0f"
                     : "Pop: %.1f (x%.1f) | Bonheur: %.1f (%dx%.1fx%.1f) | Batiments: %.1f (x%.1f) | Niveau: %.1f (%.2fx%dx%.1f) | Claims: %.1f (x%.1f) | Sous-total: %.1f x5 = %.0f";
-
-            case "admin.status.scoring_mode":
-                return en ? "Scoring mode: %s" : "Mode de score: %s";
-            case "admin.status.new_preset":
-                return en ? "New preset: %s" : "Preset (new): %s";
-
-            case "admin.scoring.switched":
-                return en ? "Scoring mode switched to: %s" : "Mode de score change: %s";
-            case "admin.scoring.preset_switched":
-                return en ? "New preset switched to: %s" : "Preset (new) change: %s";
-            case "admin.scoring.invalid_mode":
-                return en ? "Invalid scoring mode: %s. Use 'old' or 'new'." : "Mode de score invalide: %s. Utilisez 'old' ou 'new'.";
-            case "admin.scoring.invalid_preset":
-                return en ? "Invalid preset: %s. Available: developpement, population, expansion, gestion, metropole." : "Preset invalide: %s. Disponibles: developpement, population, expansion, gestion, metropole.";
-
-            case "admin.help.scoringmode":
-                return en ? "/colonyadmin scoringmode <old|new> - Switch scoring system" : "/colonyadmin scoringmode <old|new> - Changer le systeme de score";
-            case "admin.help.preset":
-                return en ? "/colonyadmin preset <name> - Set NEW mode preset" : "/colonyadmin preset <name> - Definir le preset du mode NEW";
 
             default:
                 return key;
