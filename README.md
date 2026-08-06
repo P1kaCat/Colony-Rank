@@ -67,11 +67,11 @@ All NEW preset formulas calculate component values first and multiply the overal
 
 | Preset | Pop coef | Happiness coef | Buildings coef | Level coef | Claims coef |
 |---|---|---|---|---|---|
-| **Developpement** | 5 | 0.4 | 5 | 2.5 | 0.5 |
+| **Development** | 5 | 0.4 | 5 | 2.5 | 0.5 |
 | **Population** | 10 | 0.6 | 5 | 1.5 | 0.5 |
 | **Expansion** | 5 | 0.4 | 8 | 1.5 | 2 |
-| **Gestion** | 5 | 1.0 | 6 | 1.5 | 0.5 |
-| **Metropole** | 5 | 0.4 | 12 | 1.0 | 1 |
+| **Management** | 5 | 1.0 | 6 | 1.5 | 0.5 |
+| **Metropolis** | 5 | 0.4 | 12 | 1.0 | 1 |
 
 **Component formulas:**
 - `Pop` = Population × popCoef
@@ -83,7 +83,7 @@ All NEW preset formulas calculate component values first and multiply the overal
 #### 3. Custom Preset (NEW mode)
 Choose `custom` as the preset to define your own coefficients. The 5 coefficients are editable in the Fzzy Config screen or via `/colonyadmin preset custom`.
 
-Defaults match the Developpement preset:
+Defaults match the Development preset:
 - `customPopCoef` = 5.0
 - `customHappinessCoef` = 0.4
 - `customBuildingCoef` = 5.0
@@ -132,7 +132,7 @@ timezone=Europe/Paris
 | `senddaily` | Force a daily Discord send |
 | `discordstatus` | Show Discord webhook status |
 | `scoringmode <old\|new>` | Switch scoring system |
-| `preset <name>` | Set NEW mode preset (`developpement`, `population`, `expansion`, `gestion`, `metropole`, `custom`) |
+| `preset <name>` | Set NEW mode preset (`development`, `population`, `expansion`, `management`, `metropolis`, `custom`) |
 | `ignore <colonyId>` | Exclude a colony from the ranking |
 | `unignore <colonyId>` | Restore an ignored colony |
 | `ignorelist` | List all ignored colonies |

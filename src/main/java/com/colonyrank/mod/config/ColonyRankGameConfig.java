@@ -40,17 +40,10 @@ public class ColonyRankGameConfig extends Config {
     public ValidatedString scoringMode = ValidatedString.fromValues("new", "old", "new");
 
     // --- NEW mode preset (includes "custom" for user-defined coefficients) ---
-    public ValidatedString newPreset = ValidatedString.fromValues("developpement",
-        "developpement", "population", "expansion", "gestion", "metropole", "custom");
+    public ValidatedString newPreset = ValidatedString.fromValues("development",
+        "development", "population", "expansion", "management", "metropolis", "custom");
 
     // --- Custom preset coefficients (used when newPreset = "custom") ---
-    // NEW mode formula per component:
-    //   Population = PNJ × popCoef
-    //   Bonheur    = PNJ × Bonheur × happinessCoef
-    //   Bâtiments  = Nombre de bâtiments × buildingCoef
-    //   Niveau     = Niveau moyen × Nombre de bâtiments × levelCoef
-    //   Claims     = Claims × claimsCoef
-    //   Final: (Pop + Bonheur + Bât + Niveau + Claims) × 5
     public ValidatedDouble customPopCoef = new ValidatedDouble(5.0);
     public ValidatedDouble customHappinessCoef = new ValidatedDouble(0.4);
     public ValidatedDouble customBuildingCoef = new ValidatedDouble(5.0);
@@ -121,17 +114,17 @@ public class ColonyRankGameConfig extends Config {
 
     // --- NEW preset ---
     public static String getNewPreset() {
-        if (INSTANCE == null) return "developpement";
+        if (INSTANCE == null) return "development";
         String raw = INSTANCE.newPreset.get();
-        if (raw == null) return "developpement";
+        if (raw == null) return "development";
         String normalized = raw.trim().toLowerCase(Locale.ROOT);
         return switch (normalized) {
             case "population" -> "population";
             case "expansion" -> "expansion";
-            case "gestion" -> "gestion";
-            case "metropole" -> "metropole";
+            case "management", "gestion" -> "management"; // backward compat
+            case "metropolis", "metropole" -> "metropolis"; // backward compat
             case "custom" -> "custom";
-            default -> "developpement";
+            default -> "development"; // also handles legacy "developpement"
         };
     }
 
@@ -146,10 +139,20 @@ public class ColonyRankGameConfig extends Config {
     public static void setNewPreset(String preset) {
         if (INSTANCE == null) return;
         String normalized = preset.trim().toLowerCase(Locale.ROOT);
-        if (!normalized.equals("developpement") && !normalized.equals("population") &&
-            !normalized.equals("expansion") && !normalized.equals("gestion") &&
-            !normalized.equals("metropole") && !normalized.equals("custom")) return;
-        INSTANCE.newPreset.trySetQuiet(normalized);
+        if (!normalized.equals("development") && !normalized.equals("population") &&
+            !normalized.equals("expansion") && !normalized.equals("management") &&
+            !normalized.equals("metropolis") && !normalized.equals("custom") &&
+            // backward compat: accept old French names
+            !normalized.equals("developpement") && !normalized.equals("gestion") &&
+            !normalized.equals("metropole")) return;
+        // Normalize legacy names to new English names
+        String stored = switch (normalized) {
+            case "developpement" -> "development";
+            case "gestion" -> "management";
+            case "metropole" -> "metropolis";
+            default -> normalized;
+        };
+        INSTANCE.newPreset.trySetQuiet(stored);
         INSTANCE.save();
     }
 

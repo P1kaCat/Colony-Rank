@@ -208,7 +208,7 @@ public final class LocalizationManager {
             case "admin.scoring.invalid_mode":
                 return en ? "Invalid scoring mode: %s. Use 'old' or 'new'." : "Mode de score invalide: %s. Utilisez 'old' ou 'new'.";
             case "admin.scoring.invalid_preset":
-                return en ? "Invalid preset: %s. Available: developpement, population, expansion, gestion, metropole, custom." : "Preset invalide: %s. Disponibles: developpement, population, expansion, gestion, metropole, custom.";
+                return en ? "Invalid preset: %s. Available: development, population, expansion, management, metropolis, custom." : "Preset invalide: %s. Disponibles: development, population, expansion, management, metropolis, custom.";
 
             case "admin.ignore.not_found":
                 return en ? "Colony ID %d does not exist in the cache." : "La colonie ID %d n existe pas dans le cache.";
@@ -248,7 +248,7 @@ public final class LocalizationManager {
             case "admin.help.scoringmode":
                 return en ? "/colonyadmin scoringmode <old|new> - Switch scoring system" : "/colonyadmin scoringmode <old|new> - Changer le systeme de score";
             case "admin.help.preset":
-                return en ? "/colonyadmin preset <name> - Set NEW mode preset (developpement, population, expansion, gestion, metropole, custom)" : "/colonyadmin preset <name> - Definir le preset du mode NEW (developpement, population, expansion, gestion, metropole, custom)";
+                return en ? "/colonyadmin preset <name> - Set NEW mode preset (development, population, expansion, management, metropolis, custom)" : "/colonyadmin preset <name> - Definir le preset du mode NEW (development, population, expansion, management, metropolis, custom)";
             case "admin.help.ignore":
                 return en ? "/colonyadmin ignore <colonyId> - Ignore a colony (excluded from ranking)" : "/colonyadmin ignore <colonyId> - Ignorer une colonie (exclue du classement)";
             case "admin.help.unignore":
