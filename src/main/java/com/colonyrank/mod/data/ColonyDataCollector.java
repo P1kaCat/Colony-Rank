@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Collects and caches colony data from MineColonies.
- * Handles data refresh, JSON export, and Discord publishing.
+ * Handles data refresh, JSON export, Discord publishing, and ignored colonies.
  */
 public class ColonyDataCollector {
     private static final Logger LOGGER = LoggerFactory.getLogger("ColonyRank");
@@ -30,11 +30,12 @@ public class ColonyDataCollector {
     private final MineColoniesAPIHelper apiHelper = new MineColoniesAPIHelper();
     private final DiscordWebhookPublisher discordPublisher = new DiscordWebhookPublisher();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final IgnoredColoniesManager ignoredManager = new IgnoredColoniesManager();
 
     private final Map<Integer, ColonyData> colonyCache = new ConcurrentHashMap<>();
 
     public ColonyDataCollector() {
-        LOGGER.info("ColonyDataCollector initialise");
+        LOGGER.info("ColonyDataCollector initialise ({} colonies ignorees)", ignoredManager.getIgnoredCount());
     }
 
     /**
@@ -73,7 +74,7 @@ public class ColonyDataCollector {
             }
         }
 
-        LOGGER.info("Cache des colonies mis a jour: {} colonies", colonyCache.size());
+        LOGGER.info("Cache des colonies mis a jour: {} colonies ({} ignorees)", colonyCache.size(), ignoredManager.getIgnoredCount());
 
         if (!silent && discordPublisher.shouldPublishOnSave()) {
             discordPublisher.publishRankingNowAsync(getColoniesRanked());
@@ -125,22 +126,31 @@ public class ColonyDataCollector {
 
     /**
      * Get colonies ranked by score (descending).
+     * Ignored colonies are excluded from the ranking.
      */
     public List<ColonyData> getColoniesRanked() {
-        List<ColonyData> ranked = new ArrayList<>(colonyCache.values());
+        List<ColonyData> ranked = new ArrayList<>();
+        for (ColonyData colony : colonyCache.values()) {
+            if (!ignoredManager.isIgnored(colony.getColonyId())) {
+                ranked.add(colony);
+            }
+        }
         ranked.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
         return ranked;
     }
 
     /**
      * Get a colony by its ID.
+     * Returns null for ignored colonies.
      */
     public ColonyData getColonyData(int colonyId) {
+        if (ignoredManager.isIgnored(colonyId)) return null;
         return colonyCache.get(colonyId);
     }
 
     /**
      * Get a colony by its name (case-insensitive).
+     * Returns null for ignored colonies.
      */
     public ColonyData getColonyDataByName(String name) {
         if (name == null || name.isBlank()) {
@@ -148,6 +158,7 @@ public class ColonyDataCollector {
         }
         String lowerName = name.trim().toLowerCase(Locale.ROOT);
         for (ColonyData colony : colonyCache.values()) {
+            if (ignoredManager.isIgnored(colony.getColonyId())) continue;
             if (colony.getName() != null && colony.getName().trim().toLowerCase(Locale.ROOT).equals(lowerName)) {
                 return colony;
             }
@@ -156,17 +167,41 @@ public class ColonyDataCollector {
     }
 
     /**
-     * Get all cached colonies.
+     * Get all cached colonies (including ignored ones).
      */
     public Map<Integer, ColonyData> getAllColonies() {
         return Collections.unmodifiableMap(colonyCache);
     }
 
     /**
-     * Get the number of cached colonies.
+     * Get all non-ignored cached colonies.
+     */
+    public Map<Integer, ColonyData> getActiveColonies() {
+        Map<Integer, ColonyData> active = new LinkedHashMap<>();
+        for (Map.Entry<Integer, ColonyData> entry : colonyCache.entrySet()) {
+            if (!ignoredManager.isIgnored(entry.getKey())) {
+                active.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return active;
+    }
+
+    /**
+     * Get the number of cached colonies (including ignored).
      */
     public int getColonyCount() {
         return colonyCache.size();
+    }
+
+    /**
+     * Get the number of active (non-ignored) colonies.
+     */
+    public int getActiveColonyCount() {
+        int count = 0;
+        for (int id : colonyCache.keySet()) {
+            if (!ignoredManager.isIgnored(id)) count++;
+        }
+        return count;
     }
 
     /**
@@ -179,6 +214,7 @@ public class ColonyDataCollector {
 
     /**
      * Save colony data to JSON file.
+     * Only active (non-ignored) colonies are included in the ranking.
      */
     public void saveColoniesToJson() {
         saveColoniesToJson(true);
@@ -195,7 +231,8 @@ public class ColonyDataCollector {
 
             JsonObject root = new JsonObject();
             root.addProperty("generatedAt", java.time.Instant.now().toString());
-            root.addProperty("colonyCount", colonyCache.size());
+            root.addProperty("colonyCount", getActiveColonyCount());
+            root.addProperty("ignoredCount", ignoredManager.getIgnoredCount());
 
             JsonArray coloniesArray = new JsonArray();
             for (ColonyData colony : getColoniesRanked()) {
@@ -226,23 +263,34 @@ public class ColonyDataCollector {
         }
     }
 
-    /**
-     * Check if Discord webhook is configured.
-     */
+    // --- Ignored colonies management ---
+
+    public IgnoredColoniesManager getIgnoredManager() {
+        return ignoredManager;
+    }
+
+    public boolean ignoreColony(int colonyId) {
+        return ignoredManager.ignore(colonyId);
+    }
+
+    public boolean unignoreColony(int colonyId) {
+        return ignoredManager.unignore(colonyId);
+    }
+
+    public boolean isColonyIgnored(int colonyId) {
+        return ignoredManager.isIgnored(colonyId);
+    }
+
+    // --- Discord ---
+
     public boolean isDiscordWebhookConfigured() {
         return discordPublisher.isWebhookConfigured();
     }
 
-    /**
-     * Get the Discord config file path.
-     */
     public String getDiscordConfigPath() {
         return discordPublisher.getConfigPath();
     }
 
-    /**
-     * Get the Discord status line for display.
-     */
     public String getDiscordStatusLine() {
         return discordPublisher.getDailyStatusLine();
     }

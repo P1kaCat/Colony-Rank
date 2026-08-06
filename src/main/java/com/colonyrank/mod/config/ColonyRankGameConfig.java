@@ -8,6 +8,7 @@ import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.event.api.ServerUpdateContext;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedChoice;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedString;
+import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,9 +39,23 @@ public class ColonyRankGameConfig extends Config {
     // --- Scoring mode (OLD or NEW) ---
     public ValidatedString scoringMode = ValidatedString.fromValues("new", "old", "new");
 
-    // --- NEW mode preset ---
+    // --- NEW mode preset (includes "custom" for user-defined coefficients) ---
     public ValidatedString newPreset = ValidatedString.fromValues("developpement",
-        "developpement", "population", "expansion", "gestion", "metropole");
+        "developpement", "population", "expansion", "gestion", "metropole", "custom");
+
+    // --- Custom preset coefficients (used when newPreset = "custom") ---
+    // NEW mode formula per component:
+    //   Population = PNJ × popCoef
+    //   Bonheur    = PNJ × Bonheur × happinessCoef
+    //   Bâtiments  = Nombre de bâtiments × buildingCoef
+    //   Niveau     = Niveau moyen × Nombre de bâtiments × levelCoef
+    //   Claims     = Claims × claimsCoef
+    //   Final: (Pop + Bonheur + Bât + Niveau + Claims) × 5
+    public ValidatedDouble customPopCoef = new ValidatedDouble(5.0);
+    public ValidatedDouble customHappinessCoef = new ValidatedDouble(0.4);
+    public ValidatedDouble customBuildingCoef = new ValidatedDouble(5.0);
+    public ValidatedDouble customLevelCoef = new ValidatedDouble(2.5);
+    public ValidatedDouble customClaimsCoef = new ValidatedDouble(0.5);
 
     // --- OLD mode multiplier fields (with quota: 2x x5, 2x x10, 1x x100) ---
     public ValidatedChoice<Integer> populationMultiplier = createMultiplierChoice(MULTIPLIER_5);
@@ -115,6 +130,7 @@ public class ColonyRankGameConfig extends Config {
             case "expansion" -> "expansion";
             case "gestion" -> "gestion";
             case "metropole" -> "metropole";
+            case "custom" -> "custom";
             default -> "developpement";
         };
     }
@@ -132,9 +148,35 @@ public class ColonyRankGameConfig extends Config {
         String normalized = preset.trim().toLowerCase(Locale.ROOT);
         if (!normalized.equals("developpement") && !normalized.equals("population") &&
             !normalized.equals("expansion") && !normalized.equals("gestion") &&
-            !normalized.equals("metropole")) return;
+            !normalized.equals("metropole") && !normalized.equals("custom")) return;
         INSTANCE.newPreset.trySetQuiet(normalized);
         INSTANCE.save();
+    }
+
+    // --- Custom preset coefficients ---
+    public static double getCustomPopCoef() {
+        if (INSTANCE == null) return 5.0;
+        return INSTANCE.customPopCoef.get();
+    }
+
+    public static double getCustomHappinessCoef() {
+        if (INSTANCE == null) return 0.4;
+        return INSTANCE.customHappinessCoef.get();
+    }
+
+    public static double getCustomBuildingCoef() {
+        if (INSTANCE == null) return 5.0;
+        return INSTANCE.customBuildingCoef.get();
+    }
+
+    public static double getCustomLevelCoef() {
+        if (INSTANCE == null) return 2.5;
+        return INSTANCE.customLevelCoef.get();
+    }
+
+    public static double getCustomClaimsCoef() {
+        if (INSTANCE == null) return 0.5;
+        return INSTANCE.customClaimsCoef.get();
     }
 
     // --- Language ---

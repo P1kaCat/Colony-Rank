@@ -19,6 +19,7 @@ import java.util.Map;
  *   Score = (Population + Bonheur + Bâtiments + Niveau + Claims) × 5
  *
  * NEW presets define coefficients for each component.
+ * The "custom" preset reads coefficients from the config (customPopCoef, etc.)
  */
 public class ColonyScoreCalculator {
     private static final Logger LOGGER = LoggerFactory.getLogger("ColonyRank");
@@ -68,6 +69,7 @@ public class ColonyScoreCalculator {
                 case "expansion" -> EXPANSION;
                 case "gestion" -> GESTION;
                 case "metropole" -> METROPOLE;
+                case "custom" -> null; // Custom uses config coefficients
                 default -> DEVELOPPEMENT;
             };
         }
@@ -124,18 +126,38 @@ public class ColonyScoreCalculator {
     private void calculateNewScores(ColonyDataCollector collector) {
         NewPreset preset = NewPreset.fromName(ColonyRankGameConfig.getNewPreset());
 
+        double popCoef, happinessCoef, buildingCoef, levelCoef, claimsCoef;
+        String presetName;
+
+        if (preset == null) {
+            // Custom preset — read from config
+            popCoef = ColonyRankGameConfig.getCustomPopCoef();
+            happinessCoef = ColonyRankGameConfig.getCustomHappinessCoef();
+            buildingCoef = ColonyRankGameConfig.getCustomBuildingCoef();
+            levelCoef = ColonyRankGameConfig.getCustomLevelCoef();
+            claimsCoef = ColonyRankGameConfig.getCustomClaimsCoef();
+            presetName = "custom";
+        } else {
+            popCoef = preset.popCoef;
+            happinessCoef = preset.happinessCoef;
+            buildingCoef = preset.buildingCoef;
+            levelCoef = preset.levelCoef;
+            claimsCoef = preset.claimsCoef;
+            presetName = preset.getDisplayName();
+        }
+
         for (ColonyData colony : collector.getAllColonies().values()) {
-            double pop = colony.getPopulation() * preset.popCoef;
-            double bon = colony.getPopulation() * colony.getOverallHappiness() * preset.happinessCoef;
-            double bat = colony.getBuildingCount() * preset.buildingCoef;
-            double niv = colony.getAverageBuildingLevel() * colony.getBuildingCount() * preset.levelCoef;
-            double claims = colony.getClaimedChunks() * preset.claimsCoef;
+            double pop = colony.getPopulation() * popCoef;
+            double bon = colony.getPopulation() * colony.getOverallHappiness() * happinessCoef;
+            double bat = colony.getBuildingCount() * buildingCoef;
+            double niv = colony.getAverageBuildingLevel() * colony.getBuildingCount() * levelCoef;
+            double claims = colony.getClaimedChunks() * claimsCoef;
             double subtotal = pop + bon + bat + niv + claims;
             double score = subtotal * 5;
             colony.setScore(score);
         }
 
-        LOGGER.debug("Scores NEW (preset={}) recalculés pour {} colonies", preset.getDisplayName(), collector.getColonyCount());
+        LOGGER.debug("Scores NEW (preset={}) recalculés pour {} colonies", presetName, collector.getColonyCount());
     }
 
     /**
@@ -175,20 +197,37 @@ public class ColonyScoreCalculator {
     private String getNewBreakdown(ColonyData colony) {
         NewPreset preset = NewPreset.fromName(ColonyRankGameConfig.getNewPreset());
 
-        double pop = colony.getPopulation() * preset.popCoef;
-        double bon = colony.getPopulation() * colony.getOverallHappiness() * preset.happinessCoef;
-        double bat = colony.getBuildingCount() * preset.buildingCoef;
-        double niv = colony.getAverageBuildingLevel() * colony.getBuildingCount() * preset.levelCoef;
-        double claims = colony.getClaimedChunks() * preset.claimsCoef;
+        double popCoef, happinessCoef, buildingCoef, levelCoef, claimsCoef;
+
+        if (preset == null) {
+            // Custom preset
+            popCoef = ColonyRankGameConfig.getCustomPopCoef();
+            happinessCoef = ColonyRankGameConfig.getCustomHappinessCoef();
+            buildingCoef = ColonyRankGameConfig.getCustomBuildingCoef();
+            levelCoef = ColonyRankGameConfig.getCustomLevelCoef();
+            claimsCoef = ColonyRankGameConfig.getCustomClaimsCoef();
+        } else {
+            popCoef = preset.popCoef;
+            happinessCoef = preset.happinessCoef;
+            buildingCoef = preset.buildingCoef;
+            levelCoef = preset.levelCoef;
+            claimsCoef = preset.claimsCoef;
+        }
+
+        double pop = colony.getPopulation() * popCoef;
+        double bon = colony.getPopulation() * colony.getOverallHappiness() * happinessCoef;
+        double bat = colony.getBuildingCount() * buildingCoef;
+        double niv = colony.getAverageBuildingLevel() * colony.getBuildingCount() * levelCoef;
+        double claims = colony.getClaimedChunks() * claimsCoef;
         double subtotal = pop + bon + bat + niv + claims;
         double total = subtotal * 5;
 
         return I18N.t("score.breakdown.new",
-            pop, preset.popCoef,
-            bon, colony.getPopulation(), colony.getOverallHappiness(), preset.happinessCoef,
-            bat, preset.buildingCoef,
-            niv, colony.getAverageBuildingLevel(), colony.getBuildingCount(), preset.levelCoef,
-            claims, preset.claimsCoef,
+            pop, popCoef,
+            bon, colony.getPopulation(), colony.getOverallHappiness(), happinessCoef,
+            bat, buildingCoef,
+            niv, colony.getAverageBuildingLevel(), colony.getBuildingCount(), levelCoef,
+            claims, claimsCoef,
             subtotal, total);
     }
 }
