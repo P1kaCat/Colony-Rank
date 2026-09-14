@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.1] - 2026-09-14
+- Fixed ColonyRank commands not being registered correctly for players on dedicated multiplayer servers.
+- Commands are now registered through NeoForge's command registration event, allowing `/colonyrank`, `/colonyscore`, and `/colonyadmin` to be synchronized to connected clients.
+- Updated the built jar filename to `ColonyRank-1.21.1-2.0.1.jar`.
+
 ## [2.0.0] - 2026-08-06
 - Complete scoring system overhaul with two independent modes: OLD and NEW.
 - OLD mode: Preserves the historical multiplier-based system (quota: 2x x5, 2x x10, 1x x100).

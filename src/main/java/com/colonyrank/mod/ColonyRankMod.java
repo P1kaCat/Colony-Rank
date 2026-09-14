@@ -7,6 +7,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -49,6 +50,7 @@ public class ColonyRankMod {
         }
 
         IEventBus forgeEventBus = NeoForge.EVENT_BUS;
+        forgeEventBus.addListener(this::onRegisterCommands);
         forgeEventBus.addListener(this::onServerStarting);
         forgeEventBus.addListener(this::onServerStopping);
         forgeEventBus.addListener(this::onServerTick);
@@ -73,11 +75,16 @@ public class ColonyRankMod {
 
         dataCollector = new ColonyDataCollector();
         scoreCalculator = new ColonyScoreCalculator();
+    }
 
-        var commandDispatcher = event.getServer().getCommands().getDispatcher();
-        CommandColonyRank.register(commandDispatcher);
-        CommandColonyScore.register(commandDispatcher);
-        CommandColonyAdmin.register(commandDispatcher);
+    /**
+     * Commands must be registered during this event so dedicated-server clients receive
+     * the command tree when they join. Registering them during ServerStarting is too late.
+     */
+    private void onRegisterCommands(final RegisterCommandsEvent event) {
+        CommandColonyRank.register(event.getDispatcher());
+        CommandColonyScore.register(event.getDispatcher());
+        CommandColonyAdmin.register(event.getDispatcher());
 
         LOGGER.info("Commandes ColonyRank enregistrees");
     }
