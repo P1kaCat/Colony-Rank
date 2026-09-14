@@ -2,6 +2,7 @@ package com.colonyrank.mod;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -50,6 +51,7 @@ public class ColonyRankMod {
         }
 
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+        forgeEventBus.addListener(this::onRegisterCommands);
         forgeEventBus.addListener(this::onServerStarting);
         forgeEventBus.addListener(this::onServerStopping);
         forgeEventBus.addListener(this::onServerTick);
@@ -74,11 +76,16 @@ public class ColonyRankMod {
 
         dataCollector = new ColonyDataCollector();
         scoreCalculator = new ColonyScoreCalculator();
+    }
 
-        var commandDispatcher = event.getServer().getCommands().getDispatcher();
-        CommandColonyRank.register(commandDispatcher);
-        CommandColonyScore.register(commandDispatcher);
-        CommandColonyAdmin.register(commandDispatcher);
+    /**
+     * Commands must be registered during this event so dedicated-server clients receive
+     * the command tree when they join. Registering them during ServerStarting is too late.
+     */
+    private void onRegisterCommands(final RegisterCommandsEvent event) {
+        CommandColonyRank.register(event.getDispatcher());
+        CommandColonyScore.register(event.getDispatcher());
+        CommandColonyAdmin.register(event.getDispatcher());
 
         LOGGER.info("Commandes ColonyRank enregistrees");
     }
